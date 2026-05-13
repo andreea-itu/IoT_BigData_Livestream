@@ -1,0 +1,80 @@
+# Livestream Traffic Analytics — configuration
+
+stream:
+  # Public YouTube livestream URL (any 24/7 traffic / street cam).
+  # Default: Sukiyabashi Crossing, Ginza (Tokyo) — overhead view of one of
+  # Tokyo's busiest scramble intersections. Source page:
+  # https://webcams24.live/webcam/sukiyabashi-crossing-ginza-webcam
+  url: "https://www.youtube.com/watch?v=1Xm5bjdI5hU"
+  # Re-resolve the HLS manifest periodically (YouTube live URLs can rotate).
+  reresolve_seconds: 1800
+  # Process every Nth raw frame (keeps CPU/GPU sane on a busy stream).
+  frame_stride: 5
+  # Max consecutive read failures before backing off + reconnecting.
+  max_read_failures: 30
+  # Resize frames to this width before detection (height auto, keeps aspect).
+  resize_width: 960
+
+model:
+  # TensorFlow Hub SavedModel URL. Defaults to SSD MobileNet V2 (fast, ~70 MB).
+  # Other compatible options:
+  #   https://tfhub.dev/tensorflow/efficientdet/d0/1   (slower, more accurate)
+  #   https://tfhub.dev/tensorflow/centernet/hourglass_512x512/1
+  weights: "https://tfhub.dev/tensorflow/ssd_mobilenet_v2/2"
+  conf: 0.35
+  iou: 0.5            # accepted for parity, ignored by SSD
+  # COCO class IDs in the **TF Object Detection API label map (1-indexed)**.
+  #   1 person  | 2 bicycle | 3 car | 4 motorcycle | 6 bus | 8 truck
+  # The Sukiyabashi/Ginza camera is a famous pedestrian scramble, so
+  # `person` (1) is included by default and dominates the counts.
+  # For a vehicle-only camera, drop 1 from this list.
+  vehicle_class_ids: [1, 2, 3, 4, 6, 8]
+  imgsz: 320          # accepted for parity (SSD has fixed input size)
+  device: ""          # "" / "cpu" forces CPU; otherwise TF picks a GPU if found
+
+# Counting lines defined as two pixel points each, in the resized image space.
+# Use `python -m src.calibrate` to pick them interactively.
+# direction_axis: "x" or "y"; sign of (current_centroid - previous_centroid) along that axis
+# decides IN vs OUT.
+lines:
+  # Defaults are tuned for the Sukiyabashi/Ginza overhead view at 960x540.
+  # Re-run `python -m src.calibrate` to draw new lines for any other camera.
+  #
+  # Line 1 — vertical line across the bottom main road; counts vehicles
+  # moving east <-> west.
+  - name: "ginza_main_road"
+    p1: [720, 430]
+    p2: [720, 530]
+    direction_axis: "x"   # crossing left->right = IN, right->left = OUT
+  # Line 2 — horizontal line across the central scramble; counts
+  # pedestrians moving north <-> south through the famous crossing.
+  - name: "ginza_scramble_NS"
+    p1: [280, 290]
+    p2: [700, 290]
+    direction_axis: "y"   # crossing top->bottom = IN, bottom->top = OUT
+
+features:
+  # Region of interest polygon (resized image space) for density / congestion.
+  # Defaults to "whole frame" if empty.
+  roi_polygon: []
+  # Number of recent frames used for the speed proxy (mean tracker displacement).
+  speed_window_frames: 10
+
+events:
+  congestion_high_threshold: 0.6   # 0..1 normalized congestion index
+  congestion_high_min_seconds: 10  # must be sustained this long to fire
+  stopped_seconds: 30              # tracker barely moves this long
+  stopped_displacement_px: 5
+  # Classes excluded from STOPPED_VEHICLE detection. Pedestrians legitimately
+  # wait at lights, so flagging them as "stopped" is noise. Empty list = no exclusion.
+  stopped_exclude_classes: ["person"]
+
+storage:
+  sqlite_path: "data/traffic.db"
+  csv_dir: "data"
+  # APScheduler interval (seconds) for minute rollups + CSV export.
+  rollup_seconds: 60
+
+display:
+  show_window: false   # CLI flag --show overrides this to true
+  window_name: "Livestream Traffic Analytics"
