@@ -1,0 +1,18 @@
+__pycache__/
+*.pyc
+*.pyo
+
+# Poetry-managed in-project virtualenv (poetry.toml pins this location).
+# Do NOT ignore poetry.lock: it must be committed for reproducibility.
+.venv/
+venv/
+
+.env
+.idea/
+.vscode/
+*.pt
+data/*.db
+data/*.db-journal
+# keep CSV samples + sample frame in repo (the deliverable), ignore logs
+*.log
+.DS_Store

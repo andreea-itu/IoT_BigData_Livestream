@@ -21,7 +21,7 @@ model:
   #   https://tfhub.dev/tensorflow/efficientdet/d0/1   (slower, more accurate)
   #   https://tfhub.dev/tensorflow/centernet/hourglass_512x512/1
   weights: "https://tfhub.dev/tensorflow/ssd_mobilenet_v2/2"
-  conf: 0.35
+  conf: 0.60
   iou: 0.5            # accepted for parity, ignored by SSD
   # COCO class IDs in the **TF Object Detection API label map (1-indexed)**.
   #   1 person  | 2 bicycle | 3 car | 4 motorcycle | 6 bus | 8 truck

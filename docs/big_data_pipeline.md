@@ -17,7 +17,7 @@ Below is the production blueprint we would deploy.
                      ┌──────────────────────────┐
                      │   N camera stream nodes   │
                      │  (this repo per camera)   │
-                     │  - ingest + YOLO + track  │
+                     │  - ingest + TF + track    │
                      │  - emit JSON events       │
                      └────────────┬──────────────┘
                                   │ MQTT (QoS 1)

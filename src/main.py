@@ -125,11 +125,13 @@ class Runner:
         )
 
         self.detector = VehicleDetector(
-            weights=m.get("weights", "yolov8n.pt"),
+            weights=m.get(
+                "weights", "https://tfhub.dev/tensorflow/ssd_mobilenet_v2/2",
+            ),
             conf=m.get("conf", 0.35),
             iou=m.get("iou", 0.5),
             vehicle_class_ids=m.get("vehicle_class_ids"),
-            imgsz=m.get("imgsz", 640),
+            imgsz=m.get("imgsz", 320),
             device=m.get("device", ""),
         )
 

@@ -1,0 +1,43 @@
+{
+  "weights": "https://tfhub.dev/tensorflow/ssd_mobilenet_v2/2",
+  "conf_threshold": 0.6,
+  "vehicle_class_ids": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8
+  ],
+  "frames_benchmarked": 500,
+  "warmup_frames": 5,
+  "wall_seconds": 95.06154637299915,
+  "frames_per_second_e2e": 5.259750330992067,
+  "inference_ms": {
+    "mean": 123.98245219198725,
+    "median": 116.50585349980247,
+    "p90": 179.08480640016933,
+    "p95": 207.9529125993758,
+    "max": 358.07247800039477
+  },
+  "detections_per_frame": {
+    "mean": 0.02,
+    "median": 0.0,
+    "p90": 0.0,
+    "max": 2,
+    "total": 10,
+    "frames_with_zero_detections": 491
+  },
+  "confidence_distribution": {
+    "mean": 0.6189297020435334,
+    "p50": 0.6164224743843079,
+    "p90": 0.6382387578487396,
+    "p99": 0.6399403780698776,
+    "min": 0.60172438621521,
+    "max": 0.6401294469833374,
+    "samples": 10
+  },
+  "class_distribution": {
+    "car": 10
+  }
+}
